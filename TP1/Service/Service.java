@@ -1,16 +1,31 @@
 package Service;
+
 import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Scanner;
 
-
+import Model.ArvoreBMaisPokemon;
+import Model.HashExtensivelPokemon;
 import Pokemon.Pokemon;
 
 public class Service {
-    
-   public static void create(Pokemon pomekon) throws ParseException {  // Função para criar um novo pokemon no arquivo binário
+
+    public final RandomAccessFile raf; // atributo do tipo raf para manipulacao do arquivo
+
+    private final ArvoreBMaisPokemon tree;
+
+    private final HashExtensivelPokemon hash;
+
+    public Service(RandomAccessFile raf, String treeFile, String HashFile1, String HashFile2) throws Exception { // construtor da
+        this.raf = raf;                                                                      // classe
+        this.tree = new ArvoreBMaisPokemon(8, treeFile);
+        this.hash = new HashExtensivelPokemon(3000, HashFile1, HashFile2);
+    }
+
+    public static void create(Pokemon pomekon) throws ParseException { // Função para criar um novo pokemon no arquivo
+                                                                       // binário
         try {
             RandomAccessFile binFile = new RandomAccessFile("data.bin", "rw"); // Abertura do arquivo binário
             Scanner sc = new Scanner(System.in);
@@ -167,7 +182,8 @@ public class Service {
         }
     }
 
-    public static void update(Pokemon novoPokemon) throws ParseException { // Função para atualizar um pokemon existente do arquivo binário
+    public static void update(Pokemon novoPokemon) throws ParseException { // Função para atualizar um pokemon existente
+                                                                           // do arquivo binário
         try {
             RandomAccessFile binFile = new RandomAccessFile("data.bin", "rw");
             Scanner sc = new Scanner(System.in);
@@ -249,7 +265,8 @@ public class Service {
         }
     }
 
-    public static Pokemon criarPokemon() throws ParseException {  // Função que recebe um pokemon do teclado e transforma em um objeto
+    public static Pokemon criarPokemon() throws ParseException { // Função que recebe um pokemon do teclado e transforma
+                                                                 // em um objeto
         Scanner sc = new Scanner(System.in);
         Pokemon pomekon = new Pokemon();
         String condicional;
@@ -300,7 +317,8 @@ public class Service {
 
     }
 
-    public static Pokemon criarPokemonId() throws ParseException { // Função utilizada pelo Update para modificar um pokemon
+    public static Pokemon criarPokemonId() throws ParseException { // Função utilizada pelo Update para modificar um
+                                                                   // pokemon
         Scanner sc = new Scanner(System.in);
         Pokemon pomekon = new Pokemon();
         String condicional;
@@ -357,12 +375,14 @@ public class Service {
         try {
             RandomAccessFile binFile = new RandomAccessFile("data.bin", "rw");
             String fileName;
-            RandomAccessFile binArq[] = new RandomAccessFile[numCaminhos * 2]; // Tamanho variável dos arquivos que serão abertos
-            Pokemon pomekon[] = new Pokemon[numReg]; // Array de pokemons com o total de pokemons registrados no arquivo binário
+            RandomAccessFile binArq[] = new RandomAccessFile[numCaminhos * 2]; // Tamanho variável dos arquivos que
+                                                                               // serão abertos
+            Pokemon pomekon[] = new Pokemon[numReg]; // Array de pokemons com o total de pokemons registrados no arquivo
+                                                     // binário
             int totalReg = 0;
             int cont;
 
-            for (int i = 0; i < numReg; i++) { 
+            for (int i = 0; i < numReg; i++) {
                 pomekon[i] = new Pokemon();
             }
 
@@ -409,7 +429,7 @@ public class Service {
 
                     quickSort(pomekon, cont); // Ordenação na distribuição
 
-                    for (int j = 0; j < cont; j++) {  // Escrita do bloco no arquivo binário
+                    for (int j = 0; j < cont; j++) { // Escrita do bloco no arquivo binário
                         binArq[i].writeByte(0);
                         binArq[i].writeInt(pomekon[j].getTamanho());
                         binArq[i].writeInt(pomekon[j].getId());
@@ -432,7 +452,7 @@ public class Service {
                 }
             }
 
-            for (int i = 0; i < numCaminhos; i++) {  // Posicionando o ponteiro para o inicio dos arquivos
+            for (int i = 0; i < numCaminhos; i++) { // Posicionando o ponteiro para o inicio dos arquivos
                 binArq[i].seek(0);
             }
 
@@ -443,7 +463,9 @@ public class Service {
             while (tamanhoDoBloco < totalReg) { // Tentativa da Intercalação / Obs: não funcionou
 
                 System.out.println(debug++);
-                Pokemon pokemons[] = new Pokemon[numCaminhos * tamanhoDoBloco]; // Array com o tamanho variável dependendo do tamanho de cada bloco das intercalações
+                Pokemon pokemons[] = new Pokemon[numCaminhos * tamanhoDoBloco]; // Array com o tamanho variável
+                                                                                // dependendo do tamanho de cada bloco
+                                                                                // das intercalações
                 int pokemonsLength;
                 int incremento;
 

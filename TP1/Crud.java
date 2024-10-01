@@ -8,7 +8,7 @@ import Service.*;
 
 
 public class Crud {
-    public static void main(String[] args) throws ParseException {
+    public static void main(String[] args) throws ParseException, Exception {
         try {
             Scanner sc = new Scanner(System.in);
             RandomAccessFile binFile = new RandomAccessFile("data.bin", "rw");
@@ -87,6 +87,8 @@ public class Crud {
                 binFile.seek(0);
                 binFile.writeInt(ultimoId);
             }
+
+            Service binarioService = new Service(binFile, "treeFile", "hashFile1", "hashFile2");
 
 
             System.out.println("Digite a operacao a ser realizada:");
