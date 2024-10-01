@@ -8,10 +8,14 @@ import Service.*;
 
 
 public class Crud {
+
+    
     public static void main(String[] args) throws ParseException, Exception {
         try {
+            
             Scanner sc = new Scanner(System.in);
             RandomAccessFile binFile = new RandomAccessFile("data.bin", "rw");
+            Service binarioService = new Service(binFile, "treeFile", "hashFile1", "hashFile2");
             SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
             int tamReg = 0;
             int pos = 0;
@@ -19,6 +23,7 @@ public class Crud {
             int idBusca;
             int numCaminhos, numReg;
             String modo;
+            
 
             System.out.println("Voce deseja recarregar o arquivo csv original?");
             modo = sc.nextLine();
@@ -62,6 +67,10 @@ public class Crud {
 
                     tamReg = 55 + campos[2].length() + campos[3].length() + campos[4].length();
 
+                    
+
+                    binarioService.tree.create(Integer.parseInt(campos[0]), (int)binFile.getFilePointer());
+                    binarioService.hash.create(Integer.parseInt(campos[0]), binFile.getFilePointer());
                     binFile.writeByte(0);
                     binFile.writeInt(tamReg);
                     binFile.writeInt(Integer.parseInt(campos[0]));
@@ -88,36 +97,43 @@ public class Crud {
                 binFile.writeInt(ultimoId);
             }
 
-            Service binarioService = new Service(binFile, "treeFile", "hashFile1", "hashFile2");
 
 
-            System.out.println("Digite a operacao a ser realizada:");
+            System.out.println("""
+            Digite a operacao a ser realizada:
+            1 - Create
+            2 - Read
+            3 - Update
+            4 - Delete
+            """);
 
             String entrada = sc.nextLine();
 
-            if ((entrada.toLowerCase()).equals("create")) {
+            System.out.println("");
+
+            if ((entrada.toLowerCase()).equals("1")) {
 
                 Pokemon novoPokemon = new Pokemon();
 
                 novoPokemon = Service.criarPokemon();
 
-                Service.create(novoPokemon);
+                binarioService.create(novoPokemon);
 
-            } else if ((entrada.toLowerCase()).equals("read")) {
+            } else if ((entrada.toLowerCase()).equals("2")) {
 
                 System.out.println("Digite o Id a ser buscado");
                 idBusca = sc.nextInt();
                 Service.read(idBusca);
 
-            } else if ((entrada.toLowerCase()).equals("update")) {
+            } else if ((entrada.toLowerCase()).equals("3")) {
 
                 Pokemon novoPokemon = new Pokemon();
 
                 novoPokemon = Service.criarPokemonId();
 
-                Service.update(novoPokemon);
+                binarioService.update(novoPokemon);
 
-            } else if ((entrada.toLowerCase()).equals("delete")) {
+            } else if ((entrada.toLowerCase()).equals("4")) {
 
                 System.out.println("Digite o Id a ser deletado");
                 idBusca = sc.nextInt();

@@ -14,9 +14,9 @@ public class Service {
 
     public final RandomAccessFile raf; // atributo do tipo raf para manipulacao do arquivo
 
-    private final ArvoreBMaisPokemon tree;
+    public final ArvoreBMaisPokemon tree;
 
-    private final HashExtensivelPokemon hash;
+    public final HashExtensivelPokemon hash;
 
     public Service(RandomAccessFile raf, String treeFile, String HashFile1, String HashFile2) throws Exception { // construtor da
         this.raf = raf;                                                                      // classe
@@ -24,7 +24,7 @@ public class Service {
         this.hash = new HashExtensivelPokemon(3000, HashFile1, HashFile2);
     }
 
-    public static void create(Pokemon pomekon) throws ParseException { // Função para criar um novo pokemon no arquivo
+    public void create(Pokemon pomekon) throws Exception { // Função para criar um novo pokemon no arquivo
                                                                        // binário
         try {
             RandomAccessFile binFile = new RandomAccessFile("data.bin", "rw"); // Abertura do arquivo binário
@@ -60,6 +60,9 @@ public class Service {
             binFile.writeInt(pomekon.getGeneration());
             binFile.writeBoolean(pomekon.getLegendary());
             binFile.writeLong(pomekon.getDate_birth().getTime());
+            tree.create(pomekon.getId(), (int)tamFile);
+            hash.create(pomekon.getId(), tamFile);
+            
 
             System.out.println("O Pokemon foi adicionado no fim do arquivo");
             binFile.close();
@@ -68,6 +71,8 @@ public class Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        
     }
 
     public static void read(int idBusca) throws ParseException { // Função para ler um pokemon do arquivo binário
@@ -182,7 +187,7 @@ public class Service {
         }
     }
 
-    public static void update(Pokemon novoPokemon) throws ParseException { // Função para atualizar um pokemon existente
+    public void update(Pokemon novoPokemon) throws Exception { // Função para atualizar um pokemon existente
                                                                            // do arquivo binário
         try {
             RandomAccessFile binFile = new RandomAccessFile("data.bin", "rw");
