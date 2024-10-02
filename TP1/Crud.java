@@ -6,13 +6,11 @@ import java.util.Scanner;
 import Pokemon.*;
 import Service.*;
 
-
 public class Crud {
 
-    
     public static void main(String[] args) throws ParseException, Exception {
         try {
-            
+
             Scanner sc = new Scanner(System.in);
             RandomAccessFile binFile = new RandomAccessFile("data.bin", "rw");
             Service binarioService = new Service(binFile, "treeFile", "hashFile1", "hashFile2");
@@ -23,12 +21,12 @@ public class Crud {
             int idBusca;
             int numCaminhos, numReg;
             String modo;
-            
 
             System.out.println("Voce deseja recarregar o arquivo csv original?");
             modo = sc.nextLine();
 
-            if ((modo.toLowerCase()).equals("sim")) { // Verifica se o usuário deseja recarregar o arquivo csv e o arquivo binário
+            if ((modo.toLowerCase()).equals("sim")) { // Verifica se o usuário deseja recarregar o arquivo csv e o
+                                                      // arquivo binário
 
                 RandomAccessFile csvFile = new RandomAccessFile("Pokemons.csv", "r");
                 Pokemon pokemons[] = new Pokemon[1072]; // Array com a quantidade de registros do arquivo csv original
@@ -67,9 +65,7 @@ public class Crud {
 
                     tamReg = 55 + campos[2].length() + campos[3].length() + campos[4].length();
 
-                    
-
-                    binarioService.tree.create(Integer.parseInt(campos[0]), (int)binFile.getFilePointer());
+                    binarioService.tree.create(Integer.parseInt(campos[0]), (int) binFile.getFilePointer());
                     binarioService.hash.create(Integer.parseInt(campos[0]), binFile.getFilePointer());
                     binFile.writeByte(0);
                     binFile.writeInt(tamReg);
@@ -97,15 +93,13 @@ public class Crud {
                 binFile.writeInt(ultimoId);
             }
 
-
-
             System.out.println("""
-            Digite a operacao a ser realizada:
-            1 - Create
-            2 - Read
-            3 - Update
-            4 - Delete
-            """);
+                    Digite a operacao a ser realizada:
+                    1 - Create
+                    2 - Read
+                    3 - Update
+                    4 - Delete
+                    """);
 
             String entrada = sc.nextLine();
 
@@ -122,8 +116,37 @@ public class Crud {
             } else if ((entrada.toLowerCase()).equals("2")) {
 
                 System.out.println("Digite o Id a ser buscado");
+
                 idBusca = sc.nextInt();
-                Service.read(idBusca);
+
+                long inicio = System.currentTimeMillis();
+                Pokemon[] pokemons = binarioService.readPokemonByTree(idBusca);
+                long fim = System.currentTimeMillis();
+                for (int i = 0; i < pokemons.length; i++) {
+                    System.out.println("Busca pela árvore B+:");
+                    if(pokemons[i] != null)
+                    {System.out.println(pokemons[i].toString());}
+                    else System.out.println("Id não encontrado");
+                }
+
+                long tempoExecucao = inicio - fim;
+
+                System.out.println("Tempo de execução: " + tempoExecucao);
+                System.out.println();
+
+                System.out.println("Busca pela Hash:");
+                                    inicio = System.currentTimeMillis();
+                                    Pokemon controle = binarioService.readPokemonByHash(idBusca);
+                                    
+                                    if(controle != null)
+                                    System.out.println(((binarioService.readPokemonByHash(idBusca)).toString()));
+                                    else System.out.println("Id não encontrado");
+
+                                    fim = System.currentTimeMillis();
+
+                                    tempoExecucao = inicio - fim;
+
+                                    System.out.println("Tempo de execução: " + tempoExecucao);
 
             } else if ((entrada.toLowerCase()).equals("3")) {
 
@@ -131,7 +154,7 @@ public class Crud {
 
                 novoPokemon = Service.criarPokemonId();
 
-                binarioService.update(novoPokemon);
+                binarioService.updatePokemon(novoPokemon);
 
             } else if ((entrada.toLowerCase()).equals("4")) {
 

@@ -19,14 +19,15 @@ public class Service {
 
     public final HashExtensivelPokemon hash;
 
-    public Service(RandomAccessFile raf, String treeFile, String HashFile1, String HashFile2) throws Exception { // construtor da
-        this.raf = raf;                                                                      // classe
+    public Service(RandomAccessFile raf, String treeFile, String HashFile1, String HashFile2) throws Exception { // construtor
+                                                                                                                 // da
+        this.raf = raf; // classe
         this.tree = new ArvoreBMaisPokemon(8, treeFile);
         this.hash = new HashExtensivelPokemon(3000, HashFile1, HashFile2);
     }
 
     public void create(Pokemon pomekon) throws Exception { // Função para criar um novo pokemon no arquivo
-                                                                       // binário
+                                                           // binário
         try {
             RandomAccessFile binFile = new RandomAccessFile("data.bin", "rw"); // Abertura do arquivo binário
             Scanner sc = new Scanner(System.in);
@@ -61,9 +62,8 @@ public class Service {
             binFile.writeInt(pomekon.getGeneration());
             binFile.writeBoolean(pomekon.getLegendary());
             binFile.writeLong(pomekon.getDate_birth().getTime());
-            tree.create(pomekon.getId(), (int)tamFile);
+            tree.create(pomekon.getId(), (int) tamFile);
             hash.create(pomekon.getId(), tamFile);
-            
 
             System.out.println("O Pokemon foi adicionado no fim do arquivo");
             binFile.close();
@@ -73,7 +73,52 @@ public class Service {
             e.printStackTrace();
         }
 
-        
+    }
+
+    public void writeInFile(long pos, Pokemon pokemon) throws Exception { // metodo para escrever no arquivo, recebe a posicao para escrita e um objeto pokemon para escrever
+        raf.seek(pos); // seta o ponteiro na posicao desejada
+        raf.writeByte(0); // escreve a lapide
+        raf.writeInt(pokemon.getTamanho()); // tamanho do registro
+        raf.writeInt(pokemon.getId());
+        raf.writeInt(pokemon.getNumber());
+        raf.writeUTF(pokemon.getName());
+        raf.writeUTF(pokemon.getType1());
+        raf.writeUTF(pokemon.getType2());
+        raf.writeInt(pokemon.getTotal());
+        raf.writeInt(pokemon.getHp());
+        raf.writeInt(pokemon.getAttack());
+        raf.writeInt(pokemon.getDefense());
+        raf.writeInt(pokemon.getSp_attack());
+        raf.writeInt(pokemon.getSp_defense());
+        raf.writeInt(pokemon.getSpeed());
+        raf.writeInt(pokemon.getGeneration());
+        raf.writeBoolean(pokemon.getLegendary());
+        raf.writeLong(pokemon.getDate_birth().getTime());
+        tree.create(pokemon.getId(), (int)pos);
+        hash.create(pokemon.getId(), pos);
+    }
+
+    private void writePokemonByTam(long pos, Pokemon pokemon, int tam) throws Exception { // metodo para escrever a pokemon, mas mantendo o tamanho do arquivo anterior, metodo exclusivo do update
+        raf.seek(pos); // seta o ponteiro na posicao desejada
+        raf.writeByte(0); // escreve a lapide
+        raf.writeInt(tam); // tamanho do registro
+        raf.writeInt(pokemon.getId());
+        raf.writeInt(pokemon.getNumber());
+        raf.writeUTF(pokemon.getName());
+        raf.writeUTF(pokemon.getType1());
+        raf.writeUTF(pokemon.getType2());
+        raf.writeInt(pokemon.getTotal());
+        raf.writeInt(pokemon.getHp());
+        raf.writeInt(pokemon.getAttack());
+        raf.writeInt(pokemon.getDefense());
+        raf.writeInt(pokemon.getSp_attack());
+        raf.writeInt(pokemon.getSp_defense());
+        raf.writeInt(pokemon.getSpeed());
+        raf.writeInt(pokemon.getGeneration());
+        raf.writeBoolean(pokemon.getLegendary());
+        raf.writeLong(pokemon.getDate_birth().getTime());
+        tree.create(pokemon.getId(), (int)pos);
+        hash.create(pokemon.getId(), pos);
     }
 
     public static void read(int idBusca) throws ParseException { // Função para ler um pokemon do arquivo binário
@@ -133,97 +178,35 @@ public class Service {
     public void deletePokemon(int id) throws Exception {
         int[] posicoes;
         posicoes = tree.read(id);
-        for(int i = 0; i < posicoes.length; i++){
+        for (int i = 0; i < posicoes.length; i++) {
             raf.seek(posicoes[i]);
-            raf.writeBoolean(false);
+            raf.writeByte(1);
             tree.delete(id, posicoes[i]);
         }
         hash.delete(id);
-        }
+    }
 
-    public void update(Pokemon novoPokemon) throws Exception { // Função para atualizar um pokemon existente
-                                                                           // do arquivo binário
-        try {
-            RandomAccessFile binFile = new RandomAccessFile("data.bin", "rw");
-            Scanner sc = new Scanner(System.in);
-            Pokemon pomekon = new Pokemon();
-            int tamReg, tamReg2;
-            long pos;
-            byte lapide;
-
-            binFile.seek(4);
-
-            while (binFile.getFilePointer() < binFile.length()) {
-                lapide = binFile.readByte();
-                pos = binFile.getFilePointer();
-                if (lapide == 0) {
-                    binFile.readInt();
-                    pomekon.setId(binFile.readInt());
-                    pomekon.setNumber(binFile.readInt());
-                    pomekon.setName(binFile.readUTF());
-                    pomekon.setType1(binFile.readUTF());
-                    pomekon.setType2(binFile.readUTF());
-                    pomekon.setTotal(binFile.readInt());
-                    pomekon.setHp(binFile.readInt());
-                    pomekon.setAttack(binFile.readInt());
-                    pomekon.setDefense(binFile.readInt());
-                    pomekon.setSp_attack(binFile.readInt());
-                    pomekon.setSp_defense(binFile.readInt());
-                    pomekon.setSpeed(binFile.readInt());
-                    pomekon.setGeneration(binFile.readInt());
-                    pomekon.setLegendary(binFile.readBoolean());
-                    Date data = new Date(binFile.readLong());
-                    pomekon.setDate_birth(data);
-
-                    if (novoPokemon.getId() == pomekon.getId()) {
-                        tamReg = novoPokemon.getTamanho();
-                        tamReg2 = pomekon.getTamanho();
-
-                        if (tamReg <= tamReg2) {
-                            binFile.seek(pos);
-                            tree.create(novoPokemon.getId(), (int)pos);
-                            hash.create(novoPokemon.getId(), pos);
-                            binFile.writeInt(tamReg);
-                            binFile.writeInt(novoPokemon.getId());
-                            binFile.writeInt(novoPokemon.getNumber());
-                            binFile.writeUTF(novoPokemon.getName());
-                            binFile.writeUTF(novoPokemon.getType1());
-                            binFile.writeUTF(novoPokemon.getType2());
-                            binFile.writeInt(novoPokemon.getTotal());
-                            binFile.writeInt(novoPokemon.getHp());
-                            binFile.writeInt(novoPokemon.getAttack());
-                            binFile.writeInt(novoPokemon.getDefense());
-                            binFile.writeInt(novoPokemon.getSp_attack());
-                            binFile.writeInt(novoPokemon.getSp_defense());
-                            binFile.writeInt(novoPokemon.getSpeed());
-                            binFile.writeInt(novoPokemon.getGeneration());
-                            binFile.writeBoolean(novoPokemon.getLegendary());
-                            binFile.writeLong(data.getTime());
-                            System.out.println("O pokemon foi atualizado na mesma posicao");
-                        } else {
-                            binFile.seek(pos - 1);
-                            binFile.writeByte(1);
-                            create(novoPokemon);
-                        }
-
-                        sc.close();
-                        binFile.close();
-                        return;
-                    }
-
-                } else {
-                    tamReg = binFile.readInt();
-                    pos = tamReg + binFile.getFilePointer();
-                    binFile.seek(pos);
+    public boolean updatePokemon(Pokemon pokemon) throws Exception{
+        long pos = hash.read(pokemon.getId());
+        if(pos != -1){
+            raf.seek(pos);
+            if(!raf.readBoolean()){
+                int tam = raf.readInt();
+                Pokemon temp = readFromFile(pos);
+                if(pokemon.getTamanho() == temp.getTamanho()){
+                    writeInFile(pos, pokemon);
+                    return true;
+                } else if(pokemon.getTamanho() < temp.getTamanho()){
+                    writePokemonByTam(pos, pokemon, tam);
+                    return true;
+                } else{
+                    deletePokemon(temp.getId());
+                    writeInFile(raf.length(), pokemon);
+                    return true;
                 }
             }
-            System.out.println("Id nao encontrado");
-            sc.close();
-            binFile.close();
-            return;
-        } catch (IOException e) {
-            e.printStackTrace();
         }
+        return false;
     }
 
     public static Pokemon criarPokemon() throws ParseException { // Função que recebe um pokemon do teclado e transforma
@@ -335,22 +318,25 @@ public class Service {
     public String readString(long pos) throws IOException { // metodo para ler string de tamanho variavel
         raf.seek(pos);
         short temp = raf.readShort(); // le o tamanho da string, que e escrito no inicio dela no arquivo
-        byte [] newString = new byte[temp]; // cria o array de bytes do tamanho da string
-        for(int i = 0; i < temp; i++){ // preenche o array
+        byte[] newString = new byte[temp]; // cria o array de bytes do tamanho da string
+        for (int i = 0; i < temp; i++) { // preenche o array
             newString[i] = raf.readByte();
         }
-        return new String(newString, StandardCharsets.UTF_8); // utiliza um construtor de string para construir a string, em UTF-8
+        return new String(newString, StandardCharsets.UTF_8); // utiliza um construtor de string para construir a
+                                                              // string, em UTF-8
 
     }
 
-    public Pokemon readFromFile(long pos) throws IOException { // metodo para ler do arquivo, passando a posicao como paranetro
+    public Pokemon readFromFile(long pos) throws IOException { // metodo para ler do arquivo, passando a posicao como
+                                                               // paranetro
 
-        if(pos > 0){
+        if (pos > 0) {
             raf.seek(pos);
-            Pokemon temp = new Pokemon(); // motivo do uso deste construtor esta na classe musica
-            raf.readBoolean(); // ignorando lapide, pois nos metodos usados a lapide ja eh considerada
+            Pokemon temp = new Pokemon();
+            raf.readByte(); // ignorando lapide, pois nos metodos usados a lapide ja eh considerada
             raf.readInt(); // lendo tamanho
             temp.setId(raf.readInt());
+            temp.setNumber(raf.readInt());
             temp.setName(readString(raf.getFilePointer()));
             temp.setType1(readString(raf.getFilePointer()));
             temp.setType2(readString(raf.getFilePointer()));
@@ -367,35 +353,32 @@ public class Service {
             temp.setDate_birth(data);
 
             return temp;
-             }
-             return null;
         }
+        return null;
+    }
 
-
-    public Pokemon [] readPokemonByTree(int id) throws IOException { // metodo para Read da musica no arquivo binario
-        int [] posicoes;
-        Pokemon [] musicas;
+    public Pokemon[] readPokemonByTree(int id) throws IOException { // metodo para Read da musica no arquivo binario
+        int[] posicoes;
+        Pokemon[] pokemons;
         posicoes = tree.read(id);
-        musicas = new Pokemon[posicoes.length];
+        pokemons = new Pokemon[posicoes.length];
 
-        for(int i = 0; i < posicoes.length; i++) { // enquanto arquivo nao acabar
+        for (int i = 0; i < posicoes.length; i++) { // enquanto arquivo nao acabar
             long pos = posicoes[i];
             raf.seek(pos); // pos = posicao da lapide
-            if (raf.readBoolean()) { // checagem dupla da lápide
-                musicas[i] = readFromFile(pos);
+            if (!raf.readBoolean()) { // checagem dupla da lápide
+                pokemons[i] = readFromFile(pos);
             }
         }
 
-        return musicas;
+        return pokemons;
     }
 
-    public Pokemon readMusicaByHash(int id) throws Exception{
+    public Pokemon readPokemonByHash(int id) throws Exception {
         long data = hash.read(id);
 
-         return readFromFile(data);
+        return readFromFile(data);
     }
-
-
 
     /* Ordenação de bosta externa DEU ERRADO!!!!!!! */
     //
