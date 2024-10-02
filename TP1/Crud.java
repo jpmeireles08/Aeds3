@@ -137,7 +137,7 @@ public class Crud {
 
                 System.out.println("Digite o Id a ser deletado");
                 idBusca = sc.nextInt();
-                Service.delete(idBusca);
+                binarioService.deletePokemon(idBusca);
 
             } else if ((entrada.toLowerCase()).equals("ordenar")) {
                 System.out.println("Entre com o número de caminhos");
