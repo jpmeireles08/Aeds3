@@ -3,7 +3,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
-public class Pokemon {  // Classe Pokemon com os atributos, construtores, metodos de Set, Get e tamanho e uma função de máscara para imprimir um objeto
+// Classe Pokemon com os atributos, construtores, metodos de Set, Get,
+// tamanho e uma função de máscara para imprimir um objeto
+
+public class Pokemon { 
     private int id;
     private int number;
     private String name;

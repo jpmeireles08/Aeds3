@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class ArvoreBMaisPokemon {
  
-    private int ordem; // Número máximo de filhos que uma página pode conter
+    private int ordem; // Máximo de filhos que uma página pode ter
     private int maxElementos; // Variável igual a ordem - 1 para facilitar a clareza do código
     private int maxFilhos; // Variável igual a ordem para facilitar a clareza do código
     private RandomAccessFile arquivo; // Arquivo em que a árvore será armazenada

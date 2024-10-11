@@ -45,8 +45,8 @@ public class HashExtensivelPokemon {
         this.arqDiretorio = new RandomAccessFile(nomeArquivoDiretorio, "rw");
         this.arqCestos = new RandomAccessFile(nomeArquivoCestos, "rw");
 
-        // Se o diretório ou os cestos estiverem vazios, cria um novo diretório e lista
-        // de cestos
+        // Se o diretório ou os cestos estiverem vazios, cria um novo diretório e lista de cestos
+
         if (arqDiretorio.length() == 0 || arqCestos.length() == 0) {
 
             // Cria um novo diretório, com profundidade de 0 bits (1 único elemento)
