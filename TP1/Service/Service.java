@@ -29,7 +29,7 @@ public class Service {
     public void create(Pokemon pomekon) throws Exception { // Função para criar um novo pokemon no arquivo após receber um objeto como parâmetro
 
         try {
-            RandomAccessFile binFile = new RandomAccessFile("data.bin", "rw"); // Abertura do arquivo binário
+            RandomAccessFile binFile = new RandomAccessFile("Files\\data.bin", "rw"); // Abertura do arquivo binário
             Scanner sc = new Scanner(System.in);
             int ultimoId; // Variável para armanezar o último ID no início do arquivo binário
             int tamReg; // Armazena o tamanho do registro atual a ser manipulado
@@ -128,7 +128,7 @@ public class Service {
 
     public static void read(int idBusca) throws ParseException { // Função para ler um pokemon do arquivo binário, recebe um ID como parâmetro
         try {
-            RandomAccessFile binFile = new RandomAccessFile("data.bin", "rw");
+            RandomAccessFile binFile = new RandomAccessFile("Files\\data.bin", "rw");
             Scanner sc = new Scanner(System.in);
             Pokemon pomekon = new Pokemon();
             int tamReg;
